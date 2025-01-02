@@ -1,12 +1,11 @@
 class HashMap {
     constructor(size = 16){
         this.size = size;
-        this.buckets = Array(this.size).fill().map(() => new LinkedList());
+        this.buckets = Array(this.size).fill().map(()=> new LinkedList());
         this.loadFactor = 0;
         this.count = 0;
     }
     check(){
-        this.loadFactor = this.count / this.size;
         if (this.loadFactor > 0.75){
             this.resize();
         }
@@ -20,7 +19,7 @@ class HashMap {
     }
     set(key, value) {
         const index = this.hash(key);
-        const list = this.buckets[index];
+        const list = this.map[index];
         const newNode = new Node({ key, value });
         
         if (list.size() === 0) {
@@ -37,12 +36,11 @@ class HashMap {
             }
             list.append(newNode);
         }
-        this.count += 1
-        this.check();
+        count += 1
     }
     get(key) {
         const index = this.hash(key);
-        const list = this.buckets[index];
+        const list = this.map[index];
         let current = list.head();
         
         while (current) {
@@ -56,9 +54,9 @@ class HashMap {
 
     has(key){
         const index = this.hash(key);
-        const list = this.buckets[index]
+        const list = this.map[index]
         let keyFound = false
-        this.buckets.List.forEach(node => {
+        list.List.forEach(node => {
             if(node.data.key === key){
                 keyFound = true
             }
@@ -68,13 +66,13 @@ class HashMap {
     }
     remove(key){
         const index = this.hash(key);
-        const list = this.buckets[index]
+        const list = this.map[index]
         let current = list.head();
         let prev = null;
 
         while(current){
             if (current.data.key === key){
-                this.count -= 1
+                count -= 1
                 if (prev === null){
                     list.pop();
                     if (list.size() > 0){
@@ -96,23 +94,22 @@ class HashMap {
         return this.count
     }
     clear(){
-        this.buckets.forEach(bucket => {
+        this.map.forEach(bucket => {
             bucket.List.length = 0;
         })
-        this.count = 0
     }
     keys(){
         let keys = [];
-        this.buckets.forEach(bucket => {
+        this.map.forEach(bucket => {
             bucket.List.forEach((node) => {
-                keys.push(node.data.key)
+                keys.push(node.data.keys)
             });
         });
         return keys
     }
     values(){
         let values = [];
-        this.buckets.forEach(bucket => {
+        this.map.forEach(bucket => {
             bucket.List.forEach((node) => {
                 values.push(node.data.value)
             });
@@ -121,7 +118,7 @@ class HashMap {
     }
     entries() {
         let entries = [];
-        this.buckets.forEach(bucket => {
+        this.map.forEach(bucket => {
             bucket.List.forEach((node) => {
                 entries.push([node.data.key, node.data.value]);
             });
@@ -131,7 +128,7 @@ class HashMap {
     resize(){
         const oldBuckets = this.buckets;
         this.size *= 2;
-        this.buckets = Array(this.size).fill(null).map(() => new LinkedList());
+        this.buckets = Array(this.size).fill(null).map(() => []);
         this.count = 0;
         this.loadFactor = 0;
         for (const bucket of oldBuckets) {
@@ -153,8 +150,7 @@ class Node {
 function LinkedList() {
     this.List = [];
 
-    // Using arrow functions to maintain 'this' context
-    const prepend = (Node) => {
+    function prepend(Node) {
         if (this.List.length > 0) {
             let prevFirstNode = this.List[0];
             this.List.unshift(Node);
@@ -162,9 +158,9 @@ function LinkedList() {
         } else {
             this.List.push(Node);
         }
-    };
+    }
 
-    const append = (Node) => {
+    function append(Node) {
         if (this.List.length > 0) {
             let prevLastNode = this.List[this.List.length - 1];
             this.List.push(Node);
@@ -172,53 +168,53 @@ function LinkedList() {
         } else {
             this.List.push(Node);
         }
-    };
+    }
 
-    const size = () => {
+    function size() {
         return this.List.length;
-    };
+    }
 
-    const head = () => {
+    function head() {
         return this.List[0];
-    };
+    }
 
-    const tail = () => {
+    function tail() {
         return this.List[this.List.length - 1];
-    };
+    }
 
-    const at = (index) => {
+    function at(index) {
         return this.List[index];
-    };
+    }
 
-    const pop = () => {
+    function pop() {
         this.List.pop();
-    };
+    }
 
-    const contains = (value) => {
+    function contains(value) {
         return this.List.some(node => node.data === value);
-    };
+    }
 
-    const find = (value) => {
+    function find(value) {
         let node = this.List.find(node => node.data === value);
         return node ? this.List.indexOf(node) : null;
-    };
+    }
 
-    const toString = () => {
-            let string = ''
-            List.forEach(Node => {
-                if(Node.nextNode == null){
-                    string += `(${Node.data}) -> null`
-                }
-                else{
-                    string += `(${Node.data}) -> `
-                }
-            })
-            return string
-    };
+    function toString() {
+        return this.List.reduce((str, node, index) => 
+            str + `(${node.data}) -> ` + (index === this.List.length - 1 ? 'null' : ''), '');
+    }
 
-    // Return methods without needing .bind(this) due to arrow functions
     return {
-        append, prepend, at, tail, head, pop, size, contains, find, toString
+        append: append.bind(this),
+        prepend: prepend.bind(this),
+        at: at.bind(this),
+        tail: tail.bind(this),
+        head: head.bind(this),
+        pop: pop.bind(this),
+        size: size.bind(this),
+        contains: contains.bind(this),
+        find: find.bind(this),
+        toString: toString.bind(this)
     };
 }
 
@@ -240,14 +236,28 @@ myLinkedList.prepend(Hamster);
 
 console.log(myLinkedList.toString());
 
-const test = new HashMap()
+// Test array method
+let x = [1,2,3,4,5];
+console.log(x.indexOf(3)); // Expected output: 2
 
+
+const test = new HashMap()
 test.set('apple', 'red')
 test.set('banana', 'yellow')
 test.set('carrot', 'orange')
 test.set('dog', 'brown')
 test.set('elephant', 'gray')
+test.set('frog', 'green')
+test.set('grape', 'purple')
+test.set('hat', 'black')
+test.set('ice cream', 'white')
+test.set('jacket', 'blue')
+test.set('kite', 'pink')
+test.set('lion', 'golden')
+test.set('cheese', 'yellow')
+test.set('chess', 'brown')
+test.set('chest', 'black')
+test.set('chester', 'grey')
 
 
-
-console.log(test.buckets[0].toString())
+console.log(test)
