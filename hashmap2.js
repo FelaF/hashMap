@@ -78,10 +78,7 @@ class HashMap{
         const index = this.hash(key);
         const LList = this.buckets[index];
         const current = LList.head();
-        console.log(LList)
-        if (current) {
-            return false;
-        }
+        console.log(LList.head())
         let prev = null;
     
         while (current !== null) {
@@ -129,6 +126,10 @@ firstHashMap.set("Jimeny","Crickets")
 console.log(firstHashMap.has("Four"))
 console.log(firstHashMap.remove("Jimeny"))
 console.log(firstHashMap.remove("Four"))
+
+console.log(firstHashMap.has("Four"))
+
+
 
 
 console.log(firstHashMap.buckets[0].toString())
