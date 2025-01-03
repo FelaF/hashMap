@@ -73,4 +73,5 @@ function LinkedList(){
 
     return{append,prepend,at,tail,head,pop,size,contains,find,toString}
 }
+
 export {Node, LinkedList}
